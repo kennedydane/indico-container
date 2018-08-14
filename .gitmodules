@@ -1,0 +1,3 @@
+[submodule "indico/indico"]
+	path = indico/src
+	url = git@github.com:kennedydane/indico.git
