@@ -1,0 +1,103 @@
+version: '3.7'
+services:
+#  userdb-portal:
+#    container_name: userdb.web
+#    restart: always
+#    build:
+#      context: ./portal/
+#      shm_size: '2gb'
+#    image: userdb_portal:0.1
+#    env_file: env
+#    volumes:
+#      - userdb-web-volume:/data/userdb/persistent
+#      - ./portal/django-code:/data/userdb/portal
+#      - userdb-backups-volume:/data/backups
+#    # command: /usr/bin/gunicorn userdb.wsgi:application -w 4 -b :8000
+#    entrypoint: /portal-entrypoint.sh
+#    networks:
+#      - back-tier
+#    depends_on:
+#      - postgres
+#      - redis
+
+  # celery:
+  #   container_name: userdb.celery
+  #   restart: always
+  #   build:
+  #     context: ./portal/
+  #   image: userdb_portal:0.1
+  #   env_file: env
+  #   volumes:
+  #     - userdb-web-volume:/data/userdb/persistent
+  #     - ./portal/django-code:/data/userdb/portal
+  #     - userdb-backups-volume:/data/backups
+  #   entrypoint: /celery-entrypoint.sh
+  #   networks:
+  #     - back-tier
+  #   depends_on:
+  #     - postgres
+
+#  nginx:
+#    container_name: userdb.nginx
+#    restart: always
+#    build:
+#      context: ./nginx/
+#    image: userdb_nginx:0.1
+#    env_file: env
+#    ports:
+#      - "9080:80"
+#      - "9443:443"
+#    volumes:
+#      - userdb-web-volume:/data/userdb/persistent
+#      - userdb-backups-volume:/data/backups
+#    networks:
+#      - front-tier
+#      - back-tier
+#    depends_on:
+#      - userdb-portal
+
+  postgres:
+    container_name: indico.postgres
+    restart: always
+    build:
+      context: ./postgres/
+    image: indico_postgres:0.1
+    volumes:
+      - ./postgres/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+      - indico-backups-volume:/backup
+      - indico-postgres-volume:/var/lib/postgresql/data
+    env_file: env
+    networks:
+      - back-tier
+
+#  redis:
+#    container_name: userdb.redis
+#    restart: always
+#    build:
+#      context: ./redis/
+#    image: userdb_redis:0.1
+#    env_file: env
+#    networks:
+#      - back-tier
+#    sysctls:
+#      net.core.somaxconn: '511'
+
+volumes:
+  indico-web-volume:
+    external: true
+    #driver: local
+  indico-postgres-volume:
+    external: true
+    #driver: local
+  indico-backups-volume:
+    external: true
+  indico-logs-volume:
+    external: true
+  indico-rabbitmq-volume:
+    external: true
+
+networks:
+  front-tier:
+    driver: bridge
+  back-tier:
+    driver: bridge
